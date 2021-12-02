@@ -3,7 +3,6 @@
 
 # generate a data set from a sample, or from a file.
 def sample(fpath):
-    sampleset = [199,200,208,210,200,207,240,269,260,263]
     dataset = []
 
     with open(fpath, "r") as infile:
@@ -14,7 +13,6 @@ def sample(fpath):
             except:
                 continue
 
-    dataset = sampleset if not dataset else dataset
     print("Total records: %s"%len(dataset))
     return dataset
 
@@ -62,7 +60,8 @@ def depths(frameset=[]):
 
 # do the main.
 def main():
-    fpath = "./day01-readings.txt"
+    fpath = "./day01-sample.txt" # this is the sample dataset.
+    # fpath = "./day01-data.txt"
     dataset = sample(fpath)
     frameset = frames(dataset, framesize=3)
     depthset = depths(frameset)
