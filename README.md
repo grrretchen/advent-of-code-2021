@@ -1,29 +1,15 @@
 # README #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+https://adventofcode.com/
 
-### What is this repository for? ###
+Advent of Code is an Advent calendar of small programming puzzles for a variety of skill sets and skill levels that can be solved in any programming language.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+These are my solutions.
 
-### How do I get set up? ###
+### Day 01 ###
+1. Determine number of readings are higher than previous reading
+2. Determine how many readings from a rolling frame of 3 readings are larger than the previous sum
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+### Day 02 ###
+1. Determine the product of the final distance and depth after all movements
+2. Determine the product of the final distance and depth after adjusting for an "aim" value, which is the cumulative deflection of up/down measurements.
