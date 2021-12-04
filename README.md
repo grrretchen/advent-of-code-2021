@@ -13,3 +13,7 @@ These are my solutions.
 ### Day 02 ###
 1. Determine the product of the final distance and depth after all movements
 2. Determine the product of the final distance and depth after adjusting for an "aim" value, which is the cumulative deflection of up/down measurements.
+
+### Day 03 ###
+1. Determine the product of two binary-encoded integers, which are derived from a set of readings
+2. Reduce and refine the dataset bit by bit based on a progressive criteria.

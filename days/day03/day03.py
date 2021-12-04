@@ -1,9 +1,4 @@
-import urllib.request as request
-
-def download():
-	
-    request.urlretrieve("https://adventofcode.com/2021/day/3/input", "day03-data.txt")
-
+import re
 
 
 # generate a data set from a sample, or from a file. --------------------------
@@ -18,61 +13,132 @@ def sample(fpath):
             except:
                 continue
 
-    print("Total records: %s"%len(dataset))
-    return dataset
+    result = [a.strip() for a in dataset]
+    return result
 
 
 # parse the dataset into a list -----------------------------------------------
-def parse(feed):
-    # split this into a list of lists
-    alpha = [a.strip() for a in feed]
-    beta = [0] * len(alpha[0])
+def parse(dataset):
+    # clean up the list, and init an array for the length of the string.
+    len_ds = len(dataset)
+    beta = [0] * len(dataset[0])
     
-    for row in alpha:
+    # step through each character, add the integer value blindly to the array.    
+    for row in dataset:
     	for bit in range(len(row)):
     		beta[bit] += int(row[bit])
+        
+    # divide the sum of each value by the total record count, and round up/down.
+    g_bin = [round(i/len_ds) for i in beta]
+    # then, do fancy math to find the inverse.
+    e_bin = [1-i for i in g_bin]
     
-    print(beta)
+    # also calc as a percentage, which we'll use for regex patterns
+    g_pct = [i/len_ds for i in beta]
+    e_pct = [(len_ds-i)/len_ds for i in beta]
     
-    gamma = [round(i/len(alpha)) for i in beta]
-    epsilon = [1-i for i in gamma]
-    print(gamma)
-    print(epsilon)
-    
+    # seed a list for regex pattern matching
+    e_re = e_bin.copy()
+    g_re = g_bin.copy()
+
+    # do special rules on the regex pattern when a value occurs exactly 50%
+    for i in range(len(g_re)):
+        e_re[i] = "0" if e_pct[i] == 0.5 else e_re[i]
+        g_re[i] = "1" if g_pct[i] == 0.5 else g_re[i]
+
+    # then collapse the regex list into a stingle string
+    e_re = "".join([str(i) for i in e_re])
+    g_re = "".join([str(i) for i in g_re])
+
+    # send it home.
     result = {
-    	"gamma" : gamma,
-    	"epsilon" : epsilon
+    	"g_bin" : g_bin,
+    	"e_bin" : e_bin,
+        "g_pct" : g_pct,
+        "e_pct" : e_pct,
+        "g_re" : g_re,
+        "e_re" : e_re,
     	}
+
     return result
 
+
+# parse the dataset into a list -----------------------------------------------
 def part1(e = [], g = []):
+    # collapse the list into a single string.
 	e_str = "".join([str(i) for i in e])
 	g_str = "".join([str(j) for j in g])
-	print(e_str)
-	print(g_str)
 	
+    # convert the string-coded binary into an integer
 	e_bin = int(e_str, 2)
 	g_bin = int(g_str, 2)
 	
 	result = e_bin * g_bin
-	print(result)
 	return result
+
+
+# we need to slowly, recursively reduce the dataset until we have a match.
+def reduce(pattern, dataset, bs_type="g_re"):
+    # seed a list to store each bit per criteria
+    tumbler = ['0'] * len(pattern)
+
+    # we'll slowly step through the dataset, position by position.
+    for i in range(len(pattern)):
+        j = i+1
+
+        # parse the payload and set the tumbler to the corresponding bit
+        bitset = parse(dataset)
+        pattern=bitset[bs_type]
+        tumbler[i] = str(pattern[i])
+
+        # set a regex based on the tumbler, plus a wildcard to pad the string.
+        bite = f"{''.join(tumbler[0:j])}\d{{{len(pattern)-j}}}"
+        _dataset = re.findall(f"({bite})", f"|{'|'.join(dataset)}|")
+
+        # if we find a perfect match, then send it home.            
+        if len(_dataset) == 1:
+            return _dataset[0]
+
+        # otherwise, send the current values forward and loop again.
+        last = bite
+        dataset = _dataset
+
+
+# parse the dataset into a list -----------------------------------------------
+def part2(pattern = [], dataset = []):    
+    # send a copy of the each dataset to the reducer.
+    g = reduce(pattern["g_re"], dataset.copy(), bs_type="g_re")
+    e = reduce(pattern["e_re"], dataset.copy(), bs_type="e_re")
+
+    # remap the string-binary into an integer.
+    e_result = int(e,2)
+    g_result = int(g,2)
+
+    result = {
+        "O2" : g_result,                 # g is a measurement of O2
+        "CO2" : e_result,                # e is a measurement of CO2
+        "product" : g_result * e_result
+    }
+
+    return result
 
 
 # do the main -----------------------------------------------------------------
 def main():
-    #fpath = "./day03-sample.txt" # this is the sample dataset.
+    # fpath = "./day03-sample.txt" # this is the sample dataset.
     fpath = "./day03-data.txt"
     dataset = sample(fpath)
+    print("Total records: %s"%len(dataset))
+
     bitset = parse(dataset)
-    part1final = part1(e = bitset["epsilon"], g = bitset["gamma"])
-    #print(part1)
+    print(f"Register values: {bitset}")
 
+    part1final = part1(e = bitset["e_bin"], g = bitset["g_bin"])
+    print(f"Part 1 result: {part1final}")
 
-    #pos_p2 = aim(frameset)
-    #part2 = pos_p2["h"] * pos_p2["v"]
-    #print(part2)
-    # return result
+    part2final = part2(pattern = bitset, dataset = dataset)
+    print(f"Part 2 result: {part2final}")
+
 
 # =============================================================================
 if __name__ == "__main__" :
