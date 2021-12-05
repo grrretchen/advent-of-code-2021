@@ -6,57 +6,58 @@ class board:
 		# two arrays, one for the digits, and one for the matches
 		self.board = board if board else [ [0] * 5 ] * 5
 		self.match = [ [0] * 5 ] * 5
+		self.is_solved = 0
 		
+		# set up three arrays to track the board, the tokens, and the blanks.
 		self.np_board = np.array(self.board)
+		self.np_match = np.array(self.match)
+		self.np_score = np.array(self.board)
 		
-		# score the x array, the y array, and the total.
+		# store the status of the x array, the y array, and the total.
 		self.total_score = 0
+		self.aoc_score = 0
 		self.score_x = [0] * 5
 		self.score_y = [0] * 5
-		
-		# keep track of all of the digits on the board
-		self.digits = [i for i in np.unique([x for y in self.board for x in y])]
 		
 	# we'll use this with every new token.
 	def play(self, token):
 		print(f"Playing {token}")
+		self.token = token
 		
-		
-		pp(self.board)
-		pp(self.match)
-		
-		npcount = np.count_nonzero(self.np_board==token, axis=1)
-		print(self.np_board)
-		print(npcount)
-		print(f"npcount = {npcount}")
-		exit()
-		
-		if not token in self.digits:
+		# don't bother if we don't have this number on the board
+		if not np.count_nonzero(self.np_board==token): 
 			return False
-			
-		for row in range(len(self.board)):
-			for col in range(len(self.board[row])):
-				if not token == self.board[row][col]:
-					continue
-				self.match[row][col] = token
-				pp(self.match)
-			pp(self.match[row])
-			
+	
+		# set the corresponding position for the other matrices
+		self.np_match[np.where(self.np_board==token)] = 1
+		self.np_score[np.where(self.np_board==token)] = 0
+		
+		# print(self.np_board)
+		# print(self.np_match)
+		
 		return self.score()
 		
 	# calculate each row, each column, and the overall score.
 	# return the total score if we have bingo, else False.
 	def score(self):
-		pp(self.match)
-		return
-		b = np.array(self.match)
-		print(b)
-		print(b.sum(axis=0))
-		return False
-		#for x in range(5):
-		#       self.score_y[x] = sum(i for i in self.board[x][y])
+		# always keep the total score up-to-date.
+		self.total_score = np.sum(self.np_score)
+		self.aoc_score = self.total_score * self.token
 		
+		# make a sum of the number of matches per row, or per column
+		self.score_x = np.sum(self.np_match, axis=0)
+		if 0 <= np.where(self.score_x==5)[0]:
+			self.is_solved = True
+			
+		self.score_y = np.sum(self.np_match, axis=1)
+		if 0 <= np.where(self.score_y==5)[0]:
+			self.is_solved = True
 		
+		# if we have a full row, then return the total board score.
+		if self.is_solved:
+			return self.total_score
+		
+		return False	
 		
 		
 # generate a data set from a sample, or from a file. --------------------------
@@ -73,7 +74,8 @@ def sample(fpath):
 				
 	result = [a.strip() for a in dataset]
 	return result
-	
+
+# --------------------------		
 # break the dataset into a list of gameplay tokens, and all the gameboards.
 def parse(dataset):
 	tokens = []
@@ -103,27 +105,34 @@ def parse(dataset):
 	pp(result)
 	return result
 	
+# --------------------------
 def play(boards, tokens):
+	board_scores = []
 	for token in tokens:
-		print(token)
 		for board in boards:
+			if board.is_solved:
+				continue
 			print("=====================")
-			board.play(token)
-		exit()
-		
-		
+			result = board.play(token)
+			if result:
+				board_scores.append(board.aoc_score)
+				board.is_solved = len(board_scores)
+			if len(board_scores) == len(boards):
+				print("all boards completed")
+				
+	print("=====================")
+	print(f"First win: {board_scores[0]}")
+	print(f"Last win: {board_scores[-1]}")
 		
 # do the main -----------------------------------------------------------------
 def main():
-	fpath = "./day04-sample.txt" # this is the sample dataset.
-	#fpath = "./day04-data.txt"
+	#fpath = "./day04-sample.txt" # this is the sample dataset.
+	fpath = "./day04-data.txt"
 	dataset = sample(fpath)
 	
 	gameset = parse(dataset)
 	
 	play(gameset["boards"], gameset["tokens"])
-	
-	
 	
 # =============================================================================
 if __name__ == "__main__" :
