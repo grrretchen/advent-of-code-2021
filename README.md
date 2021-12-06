@@ -18,10 +18,14 @@ These are my solutions.
 1. Determine the product of two binary-encoded integers, which are derived from a set of readings
 2. Reduce and refine the dataset bit by bit based on a progressive criteria.
 
-### Day 04  - Bingo boards###
+### Day 04  - Bingo boards ###
 1. Determine the first winner in a series of bingo boards, with a series of tokens.
 2. Determine the last winner.
 
-### Day 05 - Lantern fish population growth, with an adolescence phase ###
+### Day 05 - Hydrothermal vents ###
+1. Plot the intersections of horizontal and vertical lines
+2. Plot the intersections of all lines.
+
+### Day 06 - Lantern fish population growth, with an adolescence phase ###
 1. Count the number of fish after 80 days
 2. Count the number of fish after 256 days
