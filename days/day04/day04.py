@@ -32,9 +32,6 @@ class board:
 		self.np_match[np.where(self.np_board==token)] = 1
 		self.np_score[np.where(self.np_board==token)] = 0
 		
-		# print(self.np_board)
-		# print(self.np_match)
-		
 		return self.score()
 		
 	# calculate each row, each column, and the overall score.
