@@ -1,5 +1,5 @@
 from collections import Counter
-from numpy import median
+import numpy as np
 from datetime import datetime as dt
 # =============================================================================
 class School:
@@ -40,18 +40,37 @@ def age(dataset, days):
 	
 
 def align(dataset):
-	#dataset.sort
-	print(sum(dataset))
-	print(median(dataset))
-	#print(mean(dataset))
-	pos = Counter(dataset)
-	print(pos)
-	print(len(pos))
-	print(pos.keys())
-	print(pos.items())
-	for p in pos.items():
-		# sum of total possible moves, minus the moves canceled by this position
-		print((sum(dataset)-p[0]*p[1]))#- (p[0]*len(dataset)))
+	# make a numpy array. (duh)
+	np_ds = np.array(dataset)
+	c_ds = Counter(np_ds)
+	# assume that several crabs are already in position, and only use those positions.
+	spots = {i:0 for i in np.unique(np_ds)}
+	print(spots)
+
+	# iterate over each spot, and determine the offset.
+	for spot in spots:
+		print(f"\n{spot} -----------------------")
+		print(np_ds)
+		np_a = np_ds - spot
+		print(np_a)
+		
+#		a = {k-spot:v for k,v in c_ds.items()}
+		# b = sum[abs(a)]
+		a_neg = np.where(np_a<0)
+		a_pos = np.where(np_a>0)
+		print(f"{a_neg} < 0 < {a_pos}")
+		moves = abs(np.sum(a_neg)+abs(np.sum(a_pos)))
+		print(moves)
+		# print(spots[spot])
+
+	#print(np_ds)
+	exit()
+
+	print(dataset)
+	ds = Counter(dataset)
+	print(*dataset)
+	print(ds)
+
 	
 	
 # -----------------------------------------------------------------------------
