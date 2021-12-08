@@ -33,3 +33,7 @@ These are my solutions.
 ### Day 07 - Submarine laser crabs
 1. Realign all the crabs into a single position, using the least moves.
 2. Do the same, but take a +1 penalty which compounds for each move.
+
+### Day 08 - Rewiring a scrambled 7-digit display
+1. Determine the count of display outputs with 1, 4, 7, or 8
+2. Determine the sum of all display outputs.
