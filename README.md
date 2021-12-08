@@ -29,3 +29,7 @@ These are my solutions.
 ### Day 06 - Lantern fish population growth, with an adolescence phase ###
 1. Count the number of fish after 80 days
 2. Count the number of fish after 256 days
+
+### Day 07 - Submarine laser crabs
+1. Realign all the crabs into a single position, using the least moves.
+2. Do the same, but take a +1 penalty which compounds for each move.
