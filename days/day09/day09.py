@@ -13,12 +13,19 @@ class HeightMap:
 		self.depth = np.zeros(self.np.shape, dtype=int)
 		self.flood()
 		self.part1()
+		self.part2()
 		
 	def part1(self):
 		r1 = np.where(self.depth==-4, self.np, 0)
 		r2 = np.where(self.depth==-4, 1, 0)
 		r3 = np.sum([r1+r2])
 		return(r3)
+		
+		
+	def part2(self):
+		print(self.depth)
+		print(np.where(self.depth==-4))
+		print(np.where(self.depth>0, 8, 1))
 		
 	def flood(self):
 
@@ -91,8 +98,8 @@ def solve(dataset):
 # --------------------------------------------------------------------------
 # do the main 
 def main():
-	#fpath = "./day09-sample.txt" # this is the sample dataset.
-	fpath = "./day09-data.txt"
+	fpath = "./day09-sample.txt" # this is the sample dataset.
+	#fpath = "./day09-data.txt"
 
 	dataset = fetch(fpath)
 
