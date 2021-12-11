@@ -37,3 +37,7 @@ These are my solutions.
 ### Day 08 - Rewiring a scrambled 7-digit display
 1. Determine the count of display outputs with 1, 4, 7, or 8
 2. Determine the sum of all display outputs.
+
+### Day 09 - Find the largest low spots in the cave
+1. Determine the lowest points among neighboring points
+2. Find the sizes of the basins, and the three largest areas.
