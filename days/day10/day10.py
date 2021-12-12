@@ -1,3 +1,5 @@
+from collections import Counter
+
 class Doc:
 	def __init__(self, data):
 		self.data = data
@@ -13,7 +15,10 @@ class Doc:
 			">" : 25137,
 			")" : 3
 		}
+		
 		self.score = 0
+		self.corrupt = []
+		self.incomplete = []
 		
 		
 	def line(self,line):
@@ -33,14 +38,45 @@ class Doc:
 			else:
 				print(f"Expected {b[0]}, but found {a} instead. Points: {self.points[a]}")
 				self.score += self.points[a]
+				self.corrupt.append(a)
 				return	
 		print("incomplete")
+		self.incomplete.append((line,b))
 		
 	def part1(self):
 		for line in self.data:
 			self.line(line)
 		
 		return self.score
+		
+	def part2(self):
+		
+		s = {
+			"}" : 3,
+			"]" : 2,
+			">" : 4,
+			")" : 1
+		}
+		
+		totals=[]
+		
+		print(self.incomplete)
+		for line in self.incomplete:
+			print("-------------")
+			e = 0
+			for k in line[1]:
+				print(k)
+				e = (e*5)
+				e += (s[k]) 
+			print(e)
+			totals.append(e)
+			
+		totals.sort()
+		
+		r = totals[int((len(totals)-1)/2)]
+		
+		return r
+			
 
 
 # --------------------------------------------------------------------------	
@@ -60,7 +96,7 @@ def fetch(fpath):
 def solve(dataset):
 	doc = Doc(dataset)
 	result1 = doc.part1()
-	result2 = None
+	result2 = doc.part2()
 
 	return (result1, result2)	
 
