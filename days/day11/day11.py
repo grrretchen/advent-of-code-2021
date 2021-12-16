@@ -17,6 +17,7 @@ class Pod:
 		next = np.ones_like(last, dtype=int) + self.next
 		
 		while not np.all(next==last):
+			print("-----------")
 			diff = next==last
 			print(diff)
 			last=next.copy()
@@ -24,6 +25,7 @@ class Pod:
 			#next = np.where(next>=9,9,next)
 			print("blink")
 			
+		print("exit loop")
 		self.last = next
 		print(self.last)
 		#self.pnext = 
@@ -50,7 +52,9 @@ class Pod:
 			r = np.roll(r,nine[1],axis=1)
 			
 			beta = r + beta
+			beta = np.where(beta>=9, 9, beta)
 			print(beta)
+			sleep(1)
 			#beta = np.roll
 		
 		return(beta[1:-1,1:-1])
@@ -81,8 +85,8 @@ def solve(dataset):
 # --------------------------------------------------------------------------
 # do the main 
 def main():
-	#fpath = "./day11-sample.txt" # this is the sample dataset.
-	fpath = "./day11-data.txt"
+	fpath = "./day11-sample.txt" # this is the sample dataset.
+	#fpath = "./day11-data.txt"
 	dataset = fetch(fpath)
 	
 	r1,r2 = solve(dataset)
