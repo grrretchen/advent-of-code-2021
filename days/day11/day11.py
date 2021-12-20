@@ -8,14 +8,22 @@ class Pod:
 		self.this = self.board.copy()
 		print(self.board)
 		
-		self.age()
+		self.loop(2)
 		
+	def loop(self,count):
+		print("Before any steps:")
+		print(self.last)
+		for i in range(count):
+			self.step()
+			print(f"\nAfter step {i+1}:")
+			print(self.last)
+			
 	def step(self):
 		# set alpha to the board
 		alpha = self.board.copy()
 		
 		# First, the energy level of each octopus increases by 1.
-		beta = np.ones_like(last, dtype=int) + self.this
+		beta = alpha + np.ones_like(alpha, dtype=int)
 		
 		# Then, any octopus with an energy level greater than 9 flashes. 
 		# This increases the energy level of all adjacent octopuses by 1, 
@@ -29,14 +37,19 @@ class Pod:
 			beta=self.flash(beta)
 
 			# exit while if alpha==beta
-			if (beta == alpha):
+			if np.all(beta == alpha):
 				print("exit loop")
 				break
 
+		# Finally, any octopus that flashed during this step has its energy
+		# level set to 0, as it used all of its energy to flash.
+		charlie = np.argwhere(beta>9,0,beta)
+		
 		# show the result of this step.
 		print("step result")
 		print(beta)
-		self.last = beta
+		print(charlie)
+		self.last = charlie
 
 
 	def flash(self,matrix):
