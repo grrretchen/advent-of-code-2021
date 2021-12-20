@@ -5,40 +5,48 @@ class Pod:
 	def __init__(self, board):
 		self.board = np.array(board)
 		self.last = self.board.copy()
-		self.next = self.board.copy()
+		self.this = self.board.copy()
 		print(self.board)
 		
 		self.age()
 		
-	def age(self):
-		last = self.board.copy()
+	def step(self):
+		# set alpha to the board
+		alpha = self.board.copy()
 		
-		# increase all values by one
-		next = np.ones_like(last, dtype=int) + self.next
+		# First, the energy level of each octopus increases by 1.
+		beta = np.ones_like(last, dtype=int) + self.this
 		
-		while not np.all(next==last):
-			print("-----------")
-			diff = next==last
-			print(diff)
-			last=next.copy()
-			next=self.blink(next)
-			#next = np.where(next>=9,9,next)
-			print("blink")
-			
-		print("exit loop")
-		self.last = next
-		print(self.last)
-		#self.pnext = 
-		
-		
-		print(self.next[2:4,2:4])
-		
-	def blink(self,matrix):
+		# Then, any octopus with an energy level greater than 9 flashes. 
+		# This increases the energy level of all adjacent octopuses by 1, 
+		# including octopuses that are diagonally adjacent.
+		while not np.all(beta==alpha):
+			print("while")
+			# set alpha to the previous result.
+			alpha = beta.copy()
+
+			# recursively set beta to the result of beta
+			beta=self.flash(beta)
+
+			# exit while if alpha==beta
+			if (beta == alpha):
+				print("exit loop")
+				break
+
+		# show the result of this step.
+		print("step result")
+		print(beta)
+		self.last = beta
+
+
+	def flash(self,matrix):
 		# pad the dataset by 1 cell.
 		alpha = np.pad(matrix,(1,1),"constant",constant_values=0)
 		
-		# get all of the coordinates which are nines.
-		nines=np.argwhere(alpha==9)
+		# This increases the energy level of all adjacent octopuses by 1, 
+		# including octopuses that are diagonally adjacent.
+		# get all of the coordinates which are gt nines.
+		nines=np.argwhere(alpha>9)
 		
 		#create a 3x3 mask for the nines
 		mask = np.pad( 
@@ -52,9 +60,9 @@ class Pod:
 			r = np.roll(r,nine[1],axis=1)
 			
 			beta = r + beta
-			beta = np.where(beta>=9, 9, beta)
+			# beta = np.where(beta>=9, 9, beta)
 			print(beta)
-			sleep(1)
+			sleep(0.1)
 			#beta = np.roll
 		
 		return(beta[1:-1,1:-1])
