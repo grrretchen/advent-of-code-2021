@@ -5,22 +5,33 @@ class Pod:
 	def __init__(self, board):
 		self.board = np.array(board)
 		self.last = self.board.copy()
-		self.this = self.board.copy()
-		print(self.board)
+		self.this = self.board.copy()	
+
+		self.loop(count=2)
 		
-		self.loop(2)
-		
+
 	def loop(self,count):
 		print("Before any steps:")
 		print(self.last)
 		for i in range(count):
+			print("----------------------------")
 			self.step()
 			print(f"\nAfter step {i+1}:")
 			print(self.last)
-			
+
+
 	def step(self):
+		# psuedo-code:
+		# - increment all by one.
+		# - set blinked to all zeros
+		# - loop:
+		# -- find the new tens that aren't blinked
+		# -- blink the new tens
+		# -- store anything 10+ the result of this substep 
+
+
 		# set alpha to the board
-		alpha = self.board.copy()
+		alpha = self.last.copy()
 		
 		# First, the energy level of each octopus increases by 1.
 		beta = alpha + np.ones_like(alpha, dtype=int)
@@ -43,7 +54,7 @@ class Pod:
 
 		# Finally, any octopus that flashed during this step has its energy
 		# level set to 0, as it used all of its energy to flash.
-		charlie = np.argwhere(beta>9,0,beta)
+		charlie = np.where(beta>9,0,beta)
 		
 		# show the result of this step.
 		print("step result")
@@ -62,21 +73,30 @@ class Pod:
 		nines=np.argwhere(alpha>9)
 		
 		#create a 3x3 mask for the nines
-		mask = np.pad( 
-			np.ones((3,3),dtype=int), (0,alpha.shape[0]-3),
-			"constant", constant_values = 0)
+		mask = np.pad(
+			np.ones((3,3), dtype=int), 
+			(0,alpha.shape[0]-3),
+			"constant", 
+			constant_values = 0)
+		mask[1,1] = 0
 		
 		beta = alpha.copy()
+		overlay = np.zeros_like(beta)
 		for nine in nines:
 			r = mask.copy()
 			r = np.roll(r,nine[0],axis=0)
 			r = np.roll(r,nine[1],axis=1)
 			
-			beta = r + beta
+			overlay = r + overlay
 			# beta = np.where(beta>=9, 9, beta)
-			print(beta)
-			sleep(0.1)
+			# print(overlay)
+			# sleep(0.1)
 			#beta = np.roll
+		print(beta)
+		print(overlay)
+		print(beta+overlay)
+		sleep(1)
+		beta = beta + overlay
 		
 		return(beta[1:-1,1:-1])
 		
