@@ -1,78 +1,94 @@
 import numpy as np
+import logging
+import sys
 from time import sleep
 
+LogFormat = "%(levelname)s \t%(asctime)s \t%(message)s"
+LogLevel = logging.DEBUG
+
+logging.basicConfig(
+	stream=sys.stdout,
+	format=LogFormat,
+	level=LogLevel
+	)
+logger = logging.getLogger()
+
+# =============================================================================
 class Pod:
 	def __init__(self, board):
 		self.board = np.array(board)
 		self.last = self.board.copy()
 		self.this = self.board.copy()	
-
-		self.loop(count=2)
+		self.flashes = 0 # part 1 - count the total of all flashes.
+		self.safe = [] # part 2 - identify the first frame where all octopi flash at once.
+		self.loop(count=300)
 		
 
 	def loop(self,count):
-		print("Before any steps:")
-		print(self.last)
 		for i in range(count):
-			print("----------------------------")
+			logger.info(f"LOOP {i+1} ===================================")
 			self.step()
 			print(f"\nAfter step {i+1}:")
-			print(self.last)
-
-
-	def step(self):
-		# psuedo-code:
-		# - increment all by one.
-		# - set blinked to all zeros
-		# - loop:
-		# -- find the new tens that aren't blinked
-		# -- blink the new tens
-		# -- store anything 10+ the result of this substep 
-
-
-		# set alpha to the board
-		alpha = self.last.copy()
-		
-		# First, the energy level of each octopus increases by 1.
-		beta = alpha + np.ones_like(alpha, dtype=int)
-		
-		# Then, any octopus with an energy level greater than 9 flashes. 
-		# This increases the energy level of all adjacent octopuses by 1, 
-		# including octopuses that are diagonally adjacent.
-		while not np.all(beta==alpha):
-			print("while")
-			# set alpha to the previous result.
-			alpha = beta.copy()
-
-			# recursively set beta to the result of beta
-			beta=self.flash(beta)
-
-			# exit while if alpha==beta
-			if np.all(beta == alpha):
-				print("exit loop")
+			print(self.this)
+			print(self.flashes)
+			if np.array_equal(np.zeros_like(self.this, dtype=int), np.where(self.this==0,0,1)):
+				self.safe.append(i+1)
 				break
 
-		# Finally, any octopus that flashed during this step has its energy
+			self.last = self.this
+
+	# -------------------------------------------------------------------------
+	def step(self):
+		# logger.debug("STEP ------------------------")
+		
+		# First, the energy level of each octopus increases by 1.
+		self.this = self.last + np.ones_like(self.last, dtype=int)
+
+		# quickly return if none of the octopus are mature.
+		if not np.any(self.this > 9):
+			self.last = self.this
+			return
+
+		# Any octopus with an energy level greater than 9 flashes. 
+		# This increases the energy level of all adjacent octopuses
+		self.glowup()
+
+		# Any octopus that flashed during this step has its energy
 		# level set to 0, as it used all of its energy to flash.
-		charlie = np.where(beta>9,0,beta)
-		
-		# show the result of this step.
-		print("step result")
-		print(beta)
-		print(charlie)
-		self.last = charlie
+		self.this = np.where(self.this>9,0,self.this)
 
+		# count the flashes within this frame, and add to the total.
+		flashes = np.sum(np.where(self.this==0,1,0))
+		self.flashes += flashes
+		
 
-	def flash(self,matrix):
-		# pad the dataset by 1 cell.
-		alpha = np.pad(matrix,(1,1),"constant",constant_values=0)
-		
-		# This increases the energy level of all adjacent octopuses by 1, 
-		# including octopuses that are diagonally adjacent.
-		# get all of the coordinates which are gt nines.
-		nines=np.argwhere(alpha>9)
-		
-		#create a 3x3 mask for the nines
+	# -------------------------------------------------------------------------
+	def glowup(self):
+		# since an octopus can trigger adjacent octopus within each step, 
+		# we'll call these "slaves", 
+		# and set up a buffer to identify the new slaves within each sub-frame.		
+		slaves_0 = np.zeros_like(self.this)
+		slaves_1 = np.where(self.this>9,1,0)
+		slaves_new = slaves_1 - slaves_0
+
+		while np.any(slaves_new>0):
+			# update the frame for only the new slaves.
+			self.roll(slaves_new)
+
+			# set up the state for the next round
+			slaves_0 = slaves_1
+			slaves_1 = np.where(self.this>9,1,0)
+			slaves_new = slaves_1 - slaves_0
+					
+
+	# -------------------------------------------------------------------------
+	def roll(self,slaves):
+		# roll a frame around each octopus that flashes, to increase adjacent octopus by 1.
+
+		# pad the entire dataset by 1 cell, to create a margin.
+		alpha = np.pad(self.this,(1,1),"constant",constant_values=0)
+				
+		# create a 3x3 mask, and zero-pad to match size of dataset
 		mask = np.pad(
 			np.ones((3,3), dtype=int), 
 			(0,alpha.shape[0]-3),
@@ -80,25 +96,23 @@ class Pod:
 			constant_values = 0)
 		mask[1,1] = 0
 		
-		beta = alpha.copy()
-		overlay = np.zeros_like(beta)
-		for nine in nines:
+		# find anything greater than 9.
+		tens=np.argwhere(slaves>0)
+
+		# create an overlay which measures the increase per octopus
+		overlay = np.zeros_like(alpha)
+
+		# roll the 3x3 overlay around to each mature octopus.
+		for ten in tens:
 			r = mask.copy()
-			r = np.roll(r,nine[0],axis=0)
-			r = np.roll(r,nine[1],axis=1)
+			r = np.roll(r,ten[0],axis=0)
+			r = np.roll(r,ten[1],axis=1)
 			
 			overlay = r + overlay
-			# beta = np.where(beta>=9, 9, beta)
-			# print(overlay)
-			# sleep(0.1)
-			#beta = np.roll
-		print(beta)
-		print(overlay)
-		print(beta+overlay)
-		sleep(1)
-		beta = beta + overlay
-		
-		return(beta[1:-1,1:-1])
+
+		# add the overlay to the original dataset.
+		beta = alpha + overlay
+		self.this = beta[1:-1,1:-1]
 		
 		
 # --------------------------------------------------------------------------	
@@ -117,8 +131,8 @@ def fetch(fpath):
 # solve the problems.
 def solve(dataset):
 	board = Pod(dataset)
-	result1 = None
-	result2 = None
+	result1 = board.flashes
+	result2 = board.safe
 
 	return (result1, result2)	
 
@@ -126,8 +140,8 @@ def solve(dataset):
 # --------------------------------------------------------------------------
 # do the main 
 def main():
-	fpath = "./day11-sample.txt" # this is the sample dataset.
-	#fpath = "./day11-data.txt"
+	# fpath = "./day11-sample.txt" # this is the sample dataset.
+	fpath = "./day11-data.txt"
 	dataset = fetch(fpath)
 	
 	r1,r2 = solve(dataset)
