@@ -41,3 +41,15 @@ These are my solutions.
 ### Day 09 - Find the largest low spots in the cave
 1. Determine the lowest points among neighboring points
 2. Find the sizes of the basins, and the three largest areas.
+
+### Day 10 - Syntax Scoring
+1. Find the first illegal character in each corrupted line
+2. Score each line by summing the closing characters, then return the middle value of all rows.
+
+### Day 11 - Bioluminescent Octopus
+1. Calculate the number of flashes after 100 glow-ups.
+2. What is the first step when all octopuses flash?
+
+### Day 12 - Passage Pathing
+1. Determine the number of paths which visit small caves only once.
+2. 
