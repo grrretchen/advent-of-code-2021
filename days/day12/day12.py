@@ -34,7 +34,7 @@ def solve(dataset):
 # do the main 
 def main():
 	# fpath = "./day12-sample.txt" # this is the sample dataset.
-	fpath = "./day12-data.txt"
+	fpath = "./day12-sample.txt"
 	dataset = fetch(fpath)
 	
 	r1,r2 = solve(dataset)
