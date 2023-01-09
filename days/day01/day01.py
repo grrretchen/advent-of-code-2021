@@ -60,8 +60,8 @@ def depths(frameset=[]):
 
 # do the main.
 def main():
-    fpath = "./day01-sample.txt" # this is the sample dataset.
-    # fpath = "./day01-data.txt"
+    fpath = "./sample.txt" # this is the sample dataset.
+    fpath = "./data.txt"
     dataset = sample(fpath)
     frameset = frames(dataset, framesize=3)
     depthset = depths(frameset)
