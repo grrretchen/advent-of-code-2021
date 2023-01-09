@@ -10,7 +10,7 @@ These are my solutions.
 1. Determine number of readings are higher than previous reading
 2. Determine how many readings from a rolling frame of 3 readings are larger than the previous sum
 
-### Day 02 - Readings with an "aim" coefficient ###
+### Day 02 - [Dive!](https://adventofcode.com/2021/day/2) ###
 1. Determine the product of the final distance and depth after all movements
 2. Determine the product of the final distance and depth after adjusting for an "aim" value, which is the cumulative deflection of up/down measurements.
 
