@@ -6,7 +6,7 @@ Advent of Code is an Advent calendar of small programming puzzles for a variety 
 
 These are my solutions.
 
-### Day 01 - Readings on a sliding reference set ###
+### Day 01 - [Sonar Sweep](https://adventofcode.com/2021/day/1) ###
 1. Determine number of readings are higher than previous reading
 2. Determine how many readings from a rolling frame of 3 readings are larger than the previous sum
 
