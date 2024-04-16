@@ -52,29 +52,46 @@ def fetch(fpath):
   return dataset
 
 
-# --------------------------------------------------------------------------  
-# solve the problems.
-def solve(dataset):
-  p = Problem(dataset)
+# --------------------------------------------------------------------------
+def test():
+  # TEST, and exit if failure
+  fpath = "./test.txt" # this is the sample dataset.
 
-  p.part1()
-  p.part2()
+  try:
+    P = Problem(fetch(fpath))
+    assert 7 == P.part1()
+  except AssertionError as e:
+    print("Assertion Error in Part 1")
+    return False
 
-  return (p.result1, p.result2)  
+  try:
+    P = Problem(fetch(fpath))
+    assert 5 == P.part2()
+  except AssertionError as e:
+    print("Assertion Error in Part 2")
+    return False
+
+  return True
 
 
 # --------------------------------------------------------------------------
 # do the main 
 def main():
-  fpath = "./sample.txt" # this is the sample dataset.
-  fpath = "./data.txt"
-  dataset = fetch(fpath)
-  
-  r1,r2 = solve(dataset)
+
+
+  # RUN
+  try:
+    fpath = "./data.txt" # this is the sample dataset.
+    P = Problem(fetch(fpath))
+    result1 = P.part1()
+    result2 = P.part2()
+  except Exception as e:
+    print(e)
+
 
   result = {
-    "Part 1" : r1,
-    "Part 2" : r2
+    "Part 1" : result1,
+    "Part 2" : result2
   }
 
   return result
@@ -82,5 +99,8 @@ def main():
 
 # ==========================================================================
 if __name__ == "__main__" :
+  if not test():
+    exit()
+
   result = main()
   print(result)
